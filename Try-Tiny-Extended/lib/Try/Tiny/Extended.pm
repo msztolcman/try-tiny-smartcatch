@@ -38,15 +38,35 @@ $VERSION = '0.1';
         # some code which my die
     };
 
-    # call some code with expanded error handling
+    # call some code with expanded error handling (throw exceptions as object)
     try sub {
-        # some code which throw exceptions
+        die (Exception1->new ('some error'));
     },
     catch 'Exception1' => sub {
         # handle Exception1 exception
     },
     catch ['Exception2', 'Exception3'] => sub {
         # handle Exception2 or Exception3 exception
+    },
+    catch_all sub {
+        # handle all other exceptions
+    },
+    finally sub {
+        # and finally run some other code
+    };
+
+    # call some code with expanded error handling (throw exceptions as strings)
+    try sub {
+        die ('some error1');
+    },
+    catch 'error1' => sub {
+        # search for 'error1' in message
+    },
+    catch qr/error\d/ => sub {
+        # search exceptions matching message to regexp
+    },
+    catch ['error2', qr/error\d/'] => sub {
+        # search for 'error2' or match 'error\d in message
     },
     catch_all sub {
         # handle all other exceptions
@@ -172,7 +192,10 @@ sub try ($;@) {
                 foreach $catch_data (@catch) {
                     if (
                         (blessed ($error) && $error->isa ($$catch_data[0])) ||
-                        (!blessed ($error) && $error =~ /$$catch_data[0]/)
+                        (!blessed ($error) && (
+                            (ref ($$catch_data[0]) eq 'Regexp' && $error =~ /$$catch_data[0]/) ||
+                            (!ref ($$catch_data[0]) && index ($error, $$catch_data[0]) > -1)
+                        ))
                     ) {
                         return &{$$catch_data[1]} ($error);
                     }
@@ -215,7 +238,8 @@ Works similarly to L<Try::Tiny> C<catch> subroutine, but have a little different
 
 If raised exception is a blessed reference (or object), C<Exception1> means that exception
 class has to be or inherits from C<Exception1> class. In other case, it search for given
-string in exception message (using regular expressions). For example:
+string in exception message (using C<index> function or regular expressions - depending on
+type of given operator). For example:
 
     try sub {
         die ('some exception message');
@@ -229,7 +253,7 @@ Other case:
     try sub {
         die ('some exception3 message');
     },
-    catch 'exception\d' => sub {
+    catch qr/exception\d/ => sub {
         say 'exception caught!';
     };
 
@@ -334,7 +358,7 @@ package Try::Tiny::Extended::Catch;
 
     sub set_types {
         my ($self, $types, ) = @_;
-        $$self{types} = ref ($types) ? $types : [$types, ];
+        $$self{types} = ref ($types) eq 'ARRAY' ? $types : [$types, ];
     }
 
     sub get_types {
