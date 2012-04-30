@@ -1,0 +1,47 @@
+Try-Tiny-Extended
+
+Module for easy handling exceptions.
+
+Provides set of functions:
+ * try
+ * catch
+ * catch_all
+ * finally 
+
+Try::Tiny::Extended give you the same posibilities as Try::Tiny, but 
+also allow you to catch only certain types of exceptions.
+Additionally change a little it's syntax to use explicit sub blocks.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Try::Tiny::Extended
+
+You can also look for information at:
+
+    Try::Tiny::Extended home & source code
+        https://github.com/mysz/try-tiny-extended
+
+    Issue tracker (report bugs here)
+        https://github.com/mysz/try-tiny-extended/issues
+
+LICENSE AND COPYRIGHT
+
+	Copyright (c) 2012 Marcin Sztolcman. All rights reserved.
+
+    Base code is borrowed from Yuval Kogman L<Try::Tiny> module,
+    released under MIT License.
+
+	This program is free software; you can redistribute
+	it and/or modify it under the terms of the MIT license.
