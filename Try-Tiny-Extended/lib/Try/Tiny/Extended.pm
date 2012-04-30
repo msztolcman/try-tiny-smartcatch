@@ -9,8 +9,8 @@ use Scalar::Util qw/ blessed /;
 use vars qw(@EXPORT @EXPORT_OK $VERSION @ISA);
 
 BEGIN {
-	require Exporter;
-	@ISA = qw(Exporter);
+    require Exporter;
+    @ISA = qw(Exporter);
 }
 
 @EXPORT = @EXPORT_OK = qw(try catch catch_all finally);
@@ -420,13 +420,13 @@ Yuval Kogman for his L<Try::Tiny> module :)
 
 =head1 LICENSE AND COPYRIGHT
 
-	Copyright (c) 2012 Marcin Sztolcman. All rights reserved.
+    Copyright (c) 2012 Marcin Sztolcman. All rights reserved.
 
     Base code is borrowed from Yuval Kogman L<Try::Tiny> module,
     released under MIT License.
 
-	This program is free software; you can redistribute
-	it and/or modify it under the terms of the MIT license.
+    This program is free software; you can redistribute
+    it and/or modify it under the terms of the MIT license.
 
 =cut
 
