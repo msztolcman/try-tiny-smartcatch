@@ -3,7 +3,7 @@ Introduction
 
 Try::Tiny::Extended is Perl module for easy handling exceptions.
 
-It's mostly the same as [Try::Tiny](https://metacpan.org/module/Try::Tiny) module, but there 
+It's mostly the same as [Try::Tiny](https://metacpan.org/module/Try::Tiny) module, but there
 few changes to it's specification:
 
 * allow caught just single type of exception
@@ -57,10 +57,19 @@ Catch only exceptions of `BaseError` class:
 Catch exceptions `Error1` or `Error2`:
 
     try sub {
-        die (BaseError->new ('some error'));
+        die (Error1->new ('some error'));
     },
     catch [qw/Error1 Error2/] => sub {
         say 'Caught "Error1" or "Error2" exception';
+    };
+
+Catch exceptions inherited from ArithmeticError:
+
+    try sub {
+        die (OverflowError->new ('some error'));
+    },
+    catch 'ArithmeticError' => sub {
+        say 'Caught some arithmetic error';
     };
 
 Catch exception and run `finally` block:
