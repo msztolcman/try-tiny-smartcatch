@@ -11,33 +11,33 @@ BEGIN { use_ok 'Try::Tiny::SmartCatch' };
 
 try sub {
 	my $a = 1+1;
-}, catch_all sub {
-	fail('Cannot go into catch block because we did not throw an exception')
+}, catch_default sub {
+	fail('Cannot go into catch_default block because we did not throw an exception')
 }, finally sub {
 	pass('Moved into finally from try');
 };
 
 try sub {
 	die('Die');
-}, catch_all sub {
+}, catch_default sub {
 	ok($_ =~ /Die/, 'Error text as expected');
-	pass('Into catch block as we died in try');
+	pass('Into catch_default block as we died in try');
 }, finally sub {
-	pass('Moved into finally from catch');
+	pass('Moved into finally from catch_default');
 };
 
 try sub {
 	die('Die');
 }, finally sub {
-	pass('Moved into finally from catch');
-}, catch_all sub {
+	pass('Moved into finally from catch_default');
+}, catch_default sub {
 	ok($_ =~ /Die/, 'Error text as expected');
 };
 
 try sub {
 	die('Die');
 }, finally sub {
-	pass('Moved into finally block when try throws an exception and we have no catch block');
+	pass('Moved into finally block when try throws an exception and we have no catch_default block');
 };
 
 try sub {
@@ -68,7 +68,7 @@ try sub {
     try sub {
         die "foo";
     },
-    catch_all sub {
+    catch_default sub {
         die "bar";
     },
     finally sub {
@@ -80,7 +80,7 @@ $_ = "foo";
 try sub {
     is($_, "foo", "not localized in try");
 },
-catch_all sub {
+catch_default sub {
 },
 finally sub {
     is(scalar(@_), 0, "nothing in \@_ (finally)");
@@ -93,9 +93,9 @@ try sub {
     is($_, "foo", "not localized in try");
     die "bar\n";
 },
-catch_all sub {
-    is($_[0], "bar\n", "error in \@_ (catch)");
-    is($_, "bar\n", "error in \$_ (catch)");
+catch_default sub {
+    is($_[0], "bar\n", "error in \@_ (catch_default)");
+    is($_, "bar\n", "error in \$_ (catch_default)");
 },
 finally sub {
     is(scalar(@_), 1, "error in \@_ (finally)");

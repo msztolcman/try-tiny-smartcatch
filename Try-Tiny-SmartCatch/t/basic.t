@@ -53,7 +53,7 @@ throws_ok {
 	try sub {
 		die "foo";
 	},
-    catch_all sub {
+    catch_default sub {
         die $_
     };
 } qr/foo/, "rethrow";
@@ -73,20 +73,20 @@ throws_ok {
 
 {
 	local $@ = "magic";
-	like( (try sub { die "foo" }, catch_all sub { $_ }), qr/foo/, "catch block evaluated" );
+	like( (try sub { die "foo" }, catch_default sub { $_ }), qr/foo/, "catch block evaluated" );
 	is( $@, "magic", '$@ untouched' );
 }
 
 is( scalar(try sub { "foo", "bar", "gorch" }), "gorch", "scalar context try" );
 is_deeply( [ try sub {qw(foo bar gorch)} ], [qw(foo bar gorch)], "list context try" );
 
-is( scalar(try sub { die }, catch_all sub { "foo", "bar", "gorch" }), "gorch", "scalar context catch" );
-is_deeply( [ try sub { die }, catch_all sub {qw(foo bar gorch)} ], [qw(foo bar gorch)], "list context catch" );
+is( scalar(try sub { die }, catch_default sub { "foo", "bar", "gorch" }), "gorch", "scalar context catch" );
+is_deeply( [ try sub { die }, catch_default sub {qw(foo bar gorch)} ], [qw(foo bar gorch)], "list context catch" );
 
 
 {
-	my ($sub) = catch_all sub { my $a = $_; };
-	is(ref($sub), 'Try::Tiny::SmartCatch::Catch::All', 'Checking catch subroutine scalar reference is correctly blessed');
+	my ($sub) = catch_default sub { my $a = $_; };
+	is(ref($sub), 'Try::Tiny::SmartCatch::Catch::Default', 'Checking catch subroutine scalar reference is correctly blessed');
 }
 
 {
@@ -97,12 +97,12 @@ is_deeply( [ try sub { die }, catch_all sub {qw(foo bar gorch)} ], [qw(foo bar g
 lives_ok {
 	try  sub{
 		die "foo";
-	}, catch_all sub {
+	}, catch_default sub {
 		my $err = shift;
 
 		try sub {
 			like $err, qr/foo/;
-		}, catch_all sub {
+		}, catch_default sub {
 			fail("shouldn't happen");
 		};
 
@@ -113,10 +113,10 @@ lives_ok {
 throws_ok {
 	try sub {
 		die "foo";
-	}, catch_all sub {
+	}, catch_default sub {
 		my $err = shift;
 
-		try sub { }, catch_all sub { };
+		try sub { }, catch_default sub { };
 
 		die "rethrowing $err";
 	}
@@ -136,7 +136,7 @@ sub Evil::new { bless { }, $_[0] }
 	try sub {
 		my $object = Evil->new;
 		die "foo";
-	}, catch_all sub {
+	}, catch_default sub {
 		pass("catch invoked");
 		local $TODO = "i don't think we can ever make this work sanely, maybe with SIG{__DIE__}";
 		like($_, qr/foo/);
@@ -160,7 +160,7 @@ sub Evil::new { bless { }, $_[0] }
 			die {
 				prev => $@,
 			}
-		}, catch_all sub {
+		}, catch_default sub {
 			$caught = $_;
 			$prev = $@;
 		}

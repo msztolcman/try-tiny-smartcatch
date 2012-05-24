@@ -23,7 +23,7 @@ $_ = "magic";
 
 try sub {
 	die "foo";
-}, catch_all sub {
+}, catch_default sub {
 
 	like( $_, qr/foo/ );
 

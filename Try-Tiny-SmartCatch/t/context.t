@@ -31,13 +31,13 @@ for (sort keys %$ctx_index) {
     if ($ctx_index->{$ctx}) {
       is_deeply(
         [ run() ],
-        [ $die ? 'catch' : 'try' ],
+        [ $die ? 'catch_default' : 'try' ],
       );
     }
     elsif (defined $ctx_index->{$ctx}) {
       is_deeply(
         [ scalar run() ],
-        [ $die ? 'catch' : 'try' ],
+        [ $die ? 'catch_default' : 'try' ],
       );
     }
     else {
@@ -53,9 +53,9 @@ sub run {
     die if $die;
     return 'try';
   },
-  catch_all sub {
-    is (wantarray, $ctx_index->{$ctx}, "Proper context $ctx in catch{}");
-    return 'catch';
+  catch_default sub {
+    is (wantarray, $ctx_index->{$ctx}, "Proper context $ctx in catch_default{}");
+    return 'catch_default';
   },
   finally sub {
     is (wantarray, undef, "Proper VOID context in finally{} 1");

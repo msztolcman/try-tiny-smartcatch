@@ -21,7 +21,7 @@ given ("foo") {
     when (qr/./) {
         try sub {
             die "blah\n";
-        }, catch_all sub {
+        }, catch_default sub {
             $topic = $_;
             $error = $_[0];
         }
