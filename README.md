@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Try::Tiny::Extended is Perl module for easy handling exceptions.
+Try::Tiny::SmartCatch is Perl module for easy handling exceptions.
 
 It's mostly the same as [Try::Tiny](https://metacpan.org/module/Try::Tiny) module, but there
 few changes to it's specification:
