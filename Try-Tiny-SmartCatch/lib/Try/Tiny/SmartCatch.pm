@@ -1,4 +1,4 @@
-package Try::Tiny::Extended;
+package Try::Tiny::SmartCatch;
 
 use 5.006;
 use strict;
@@ -19,7 +19,7 @@ $Carp::Internal{+__PACKAGE__}++;
 
 =head1 NAME
 
-Try::Tiny::Extended - Try::Tiny with some additional features
+Try::Tiny::SmartCatch - Try::Tiny with some additional features
 
 =head1 VERSION
 
@@ -31,7 +31,7 @@ $VERSION = '0.1';
 
 =head1 SYNOPSIS
 
-    use Try::Tiny::Extended;
+    use Try::Tiny::SmartCatch;
 
     # call some code and just silence errors:
     try sub {
@@ -77,7 +77,7 @@ $VERSION = '0.1';
 
 =head1 DESCRIPTION
 
-C<Try::Tiny::Extended> is a simple way to handle exceptions. It's mostly a copy
+C<Try::Tiny::SmartCatch> is a simple way to handle exceptions. It's mostly a copy
 of C<Try::Tiny> module by Yuval Kogman, but with some additional features I need.
 
 Main goal for this changes is to add ability to catch B<only desired> exceptions.
@@ -121,13 +121,13 @@ sub try ($;@) {
 
         my $ref = ref ($code_ref);
 
-        if ($ref eq 'Try::Tiny::Extended::Catch') {
+        if ($ref eq 'Try::Tiny::SmartCatch::Catch') {
             push (@catch, map { [ $_, $$code_ref{code}, ] } (@{$code_ref->get_types}));
         }
-        elsif ($ref eq 'Try::Tiny::Extended::Catch::All') {
+        elsif ($ref eq 'Try::Tiny::SmartCatch::Catch::All') {
             $catch_all //= $$code_ref{code};
         }
-        elsif ($ref eq 'Try::Tiny::Extended::Finally') {
+        elsif ($ref eq 'Try::Tiny::SmartCatch::Finally') {
             push (@finally, ${$code_ref});
         }
         else {
@@ -176,7 +176,7 @@ sub try ($;@) {
 
     # set up a scope guard to invoke the finally block at the end
     my @guards =
-        map { Try::Tiny::Extended::ScopeGuard->_new ($_, $failed ? $error : ()) }
+        map { Try::Tiny::SmartCatch::ScopeGuard->_new ($_, $failed ? $error : ()) }
         @finally;
 
     # at this point $failed contains a true value if the eval died, even if some
@@ -272,7 +272,7 @@ Or:
 sub catch ($$;@) {
     my ($types, $block, ) = (shift (@_), shift (@_), );
 
-    my $catch = Try::Tiny::Extended::Catch->new ($block, $types);
+    my $catch = Try::Tiny::SmartCatch::Catch->new ($block, $types);
     return $catch, @_;
 }
 
@@ -293,7 +293,7 @@ need to specify evident sub block instead of anonymous block):
 sub catch_all ($;@) {
     my ($block, ) = shift (@_);
 
-    my $catch = Try::Tiny::Extended::Catch::All->new ($block);
+    my $catch = Try::Tiny::SmartCatch::Catch::All->new ($block);
     return $catch, @_;
 }
 
@@ -315,13 +315,13 @@ sub finally ($;@) {
     my ($block, @rest, ) = @_;
 
     return (
-        bless (\$block, 'Try::Tiny::Extended::Finally'),
+        bless (\$block, 'Try::Tiny::SmartCatch::Finally'),
         @rest,
     );
 }
 
 package # hide from PAUSE
-    Try::Tiny::Extended::ScopeGuard;
+    Try::Tiny::SmartCatch::ScopeGuard;
 {
 
     sub _new {
@@ -336,7 +336,7 @@ package # hide from PAUSE
     }
 }
 
-package Try::Tiny::Extended::Catch::All;
+package Try::Tiny::SmartCatch::Catch::All;
 {
     sub new {
         my $self = {};
@@ -346,7 +346,7 @@ package Try::Tiny::Extended::Catch::All;
     }
 }
 
-package Try::Tiny::Extended::Catch;
+package Try::Tiny::SmartCatch::Catch;
 {
     sub new {
         my $self = {};
@@ -373,7 +373,7 @@ package Try::Tiny::Extended::Catch;
 
 =item L<Try::Tiny>
 
-Minimal try/catch with proper localization of $@, base of L<Try::Catch::Extended>
+Minimal try/catch with proper localization of $@, base of L<Try::Catch::SmartCatch>
 
 =item L<TryCatch>
 
@@ -388,29 +388,29 @@ Marcin Sztolcman, C<< <marcin at urzenia.net> >>
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
-L<https://github.com/mysz/try-tiny-extended/issues>.
+L<https://github.com/mysz/try-tiny-smartcatch/issues>.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Try::Tiny::Extended
+    perldoc Try::Tiny::SmartCatch
 
 You can also look for information at:
 
 =over 4
 
-=item * Try::Tiny::Extended home & source code
+=item * Try::Tiny::SmartCatch home & source code
 
-L<https://github.com/mysz/try-tiny-extended>
+L<https://github.com/mysz/try-tiny-smartcatch>
 
 =item * Issue tracker (report bugs here)
 
-L<https://github.com/mysz/try-tiny-extended/issues>
+L<https://github.com/mysz/try-tiny-smartcatch/issues>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Try-Tiny-Extended/>
+L<http://search.cpan.org/dist/Try-Tiny-SmartCatch/>
 
 =back
 
