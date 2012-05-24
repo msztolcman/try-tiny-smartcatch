@@ -14,7 +14,7 @@ BEGIN {
   + 3         # void no exception
   ;
 
-  use_ok 'Try::Tiny::Extended';
+  use_ok 'Try::Tiny::SmartCatch';
 }
 
 my $ctx_index = {

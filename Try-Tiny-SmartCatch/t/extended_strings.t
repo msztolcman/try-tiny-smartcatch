@@ -10,7 +10,7 @@ BEGIN {
 }
 
 
-BEGIN { use_ok 'Try::Tiny::Extended' }
+BEGIN { use_ok 'Try::Tiny::SmartCatch' }
 
 is ((try sub { die 'some error' }, catch 'some error'  => sub { 42 }), 42, 'exit from catch clause (exception as string)');
 is ((try sub { die 'some error' }, catch qr/some.error/  => sub { 42 }), 42, 'exit from catch clause (exception as regexp)');

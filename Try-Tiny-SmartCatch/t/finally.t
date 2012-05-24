@@ -7,7 +7,7 @@ use strict;
 
 use Test::More tests => 24;
 
-BEGIN { use_ok 'Try::Tiny::Extended' };
+BEGIN { use_ok 'Try::Tiny::SmartCatch' };
 
 try sub {
 	my $a = 1+1;

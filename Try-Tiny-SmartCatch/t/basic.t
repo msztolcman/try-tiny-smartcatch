@@ -7,7 +7,7 @@ use strict;
 
 use Test::More tests => 26;
 
-BEGIN { use_ok 'Try::Tiny::Extended' };
+BEGIN { use_ok 'Try::Tiny::SmartCatch' };
 
 sub _eval {
 	local $@;
@@ -86,12 +86,12 @@ is_deeply( [ try sub { die }, catch_all sub {qw(foo bar gorch)} ], [qw(foo bar g
 
 {
 	my ($sub) = catch_all sub { my $a = $_; };
-	is(ref($sub), 'Try::Tiny::Extended::Catch::All', 'Checking catch subroutine scalar reference is correctly blessed');
+	is(ref($sub), 'Try::Tiny::SmartCatch::Catch::All', 'Checking catch subroutine scalar reference is correctly blessed');
 }
 
 {
 	my ($sub) = finally sub { my $a = $_; };
-	is(ref($sub), 'Try::Tiny::Extended::Finally', 'Checking finally subroutine scalar reference is correctly blessed');
+	is(ref($sub), 'Try::Tiny::SmartCatch::Finally', 'Checking finally subroutine scalar reference is correctly blessed');
 }
 
 lives_ok {

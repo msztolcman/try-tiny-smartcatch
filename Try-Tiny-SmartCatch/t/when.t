@@ -13,7 +13,7 @@ BEGIN {
 }
 
 
-BEGIN { use_ok 'Try::Tiny::Extended' }
+BEGIN { use_ok 'Try::Tiny::SmartCatch' }
 
 use 5.010;
 

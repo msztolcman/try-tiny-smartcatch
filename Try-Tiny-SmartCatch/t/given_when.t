@@ -10,7 +10,7 @@ use Test::More;
 BEGIN {
     plan skip_all => "Perl 5.10 is required" unless eval { require 5.010 };
     plan tests => 3;
-    use_ok("Try::Tiny::Extended");
+    use_ok("Try::Tiny::SmartCatch");
 }
 
 use 5.010;

@@ -28,7 +28,7 @@ BEGIN {
 }
 
 
-BEGIN { use_ok 'Try::Tiny::Extended' }
+BEGIN { use_ok 'Try::Tiny::SmartCatch' }
 
 is ((try sub { die Error1->new () }, catch 'Error1'  => sub { 42 }), 42, 'exit from catch clause (exception as object)');
 

@@ -49,7 +49,7 @@ TODO: {
     "placeholder date/time"       => qr(Date/time)
   );
 
-  module_boilerplate_ok('lib/Try/Tiny/Extended.pm');
+  module_boilerplate_ok('lib/Try/Tiny/SmartCatch.pm');
 
 
 }
