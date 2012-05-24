@@ -13,7 +13,7 @@ BEGIN {
     @ISA = qw(Exporter);
 }
 
-@EXPORT = @EXPORT_OK = qw(try catch catch_all finally);
+@EXPORT = @EXPORT_OK = qw(try catch_when catch_default finally);
 
 $Carp::Internal{+__PACKAGE__}++;
 
@@ -23,11 +23,11 @@ Try::Tiny::SmartCatch - Try::Tiny with some additional features
 
 =head1 VERSION
 
-Version 0.1
+Version 0.2
 
 =cut
 
-$VERSION = '0.1';
+$VERSION = '0.2';
 
 =head1 SYNOPSIS
 
@@ -42,13 +42,13 @@ $VERSION = '0.1';
     try sub {
         die (Exception1->new ('some error'));
     },
-    catch 'Exception1' => sub {
+    catch_when 'Exception1' => sub {
         # handle Exception1 exception
     },
-    catch ['Exception2', 'Exception3'] => sub {
+    catch_when ['Exception2', 'Exception3'] => sub {
         # handle Exception2 or Exception3 exception
     },
-    catch_all sub {
+    catch_default sub {
         # handle all other exceptions
     },
     finally sub {
@@ -59,16 +59,16 @@ $VERSION = '0.1';
     try sub {
         die ('some error1');
     },
-    catch 'error1' => sub {
+    catch_when 'error1' => sub {
         # search for 'error1' in message
     },
-    catch qr/error\d/ => sub {
+    catch_when qr/error\d/ => sub {
         # search exceptions matching message to regexp
     },
-    catch ['error2', qr/error\d/'] => sub {
+    catch_when ['error2', qr/error\d/'] => sub {
         # search for 'error2' or match 'error\d in message
     },
-    catch_all sub {
+    catch_default sub {
         # handle all other exceptions
     },
     finally sub {
@@ -112,7 +112,7 @@ sub try ($;@) {
     # to $failed
     my $wantarray = wantarray;
 
-    my ( @catch, $catch_all, @finally );
+    my ( @catch_when, $catch_default, @finally );
 
     # find labeled blocks in the argument list.
     # catch and finally tag the blocks by blessing a scalar reference to them.
@@ -121,11 +121,11 @@ sub try ($;@) {
 
         my $ref = ref ($code_ref);
 
-        if ($ref eq 'Try::Tiny::SmartCatch::Catch') {
-            push (@catch, map { [ $_, $$code_ref{code}, ] } (@{$code_ref->get_types}));
+        if ($ref eq 'Try::Tiny::SmartCatch::Catch::When') {
+            push (@catch_when, map { [ $_, $$code_ref{code}, ] } (@{$code_ref->get_types}));
         }
-        elsif ($ref eq 'Try::Tiny::SmartCatch::Catch::All') {
-            $catch_all //= $$code_ref{code};
+        elsif ($ref eq 'Try::Tiny::SmartCatch::Catch::Default') {
+            $catch_default //= $$code_ref{code};
         }
         elsif ($ref eq 'Try::Tiny::SmartCatch::Finally') {
             push (@finally, ${$code_ref});
@@ -183,13 +183,13 @@ sub try ($;@) {
     # destructor overwrote $@ as the eval was unwinding.
     if ($failed) {
         # if we got an error, invoke the catch block.
-        if (scalar (@catch) || $catch_all) {
+        if (scalar (@catch_when) || $catch_default) {
             my ($catch_data, $catched, );
 
             # This works like given($error), but is backwards compatible and
             # sets $_ in the dynamic scope for the body of C<$catch>
             for ($error) {
-                foreach $catch_data (@catch) {
+                foreach $catch_data (@catch_when) {
                     if (
                         (blessed ($error) && $error->isa ($$catch_data[0])) ||
                         (!blessed ($error) && (
@@ -201,8 +201,8 @@ sub try ($;@) {
                     }
                 }
 
-                if ($catch_all) {
-                    return &$catch_all ($error);
+                if ($catch_default) {
+                    return &$catch_default ($error);
                 }
 
                 die ($error);
@@ -220,7 +220,7 @@ sub try ($;@) {
     }
 }
 
-=head2 catch ($$;@)
+=head2 catch_when ($$;@)
 
 Intended to be used in the second argument position of C<try>.
 
@@ -229,10 +229,10 @@ Works similarly to L<Try::Tiny> C<catch> subroutine, but have a little different
     try sub {
         # some code
     },
-    catch 'Exception1' => sub {
+    catch_when 'Exception1' => sub {
         # catch only Exception1 exception
     },
-    catch ['Exception1', 'Exception2'] => sub {
+    catch_when ['Exception1', 'Exception2'] => sub {
         # catch Exception2 or Exception3 exceptions
     };
 
@@ -244,7 +244,7 @@ type of given operator). For example:
     try sub {
         die ('some exception message');
     },
-    catch 'exception' => sub {
+    catch_when 'exception' => sub {
         say 'exception caught!';
     };
 
@@ -253,7 +253,7 @@ Other case:
     try sub {
         die ('some exception3 message');
     },
-    catch qr/exception\d/ => sub {
+    catch_when qr/exception\d/ => sub {
         say 'exception caught!';
     };
 
@@ -263,20 +263,20 @@ Or:
         # ValueError extends RuntimeError
         die (ValueError->new ('Some error message'));
     },
-    catch 'RuntimeError' => sub {
+    catch_when 'RuntimeError' => sub {
         say 'RuntimeError exception caught!';
     };
 
 =cut
 
-sub catch ($$;@) {
+sub catch_when ($$;@) {
     my ($types, $block, ) = (shift (@_), shift (@_), );
 
-    my $catch = Try::Tiny::SmartCatch::Catch->new ($block, $types);
+    my $catch = Try::Tiny::SmartCatch::Catch::When->new ($block, $types);
     return $catch, @_;
 }
 
-=head2 catch_all ($;@)
+=head2 catch_default ($;@)
 
 Works exactly like L<Try::Tiny> C<catch> function (OK, there is difference:
 need to specify evident sub block instead of anonymous block):
@@ -284,16 +284,16 @@ need to specify evident sub block instead of anonymous block):
     try sub {
         # some code
     },
-    catch_all sub {
+    catch_default sub {
         say 'caught every exception';
     };
 
 =cut
 
-sub catch_all ($;@) {
+sub catch_default ($;@) {
     my ($block, ) = shift (@_);
 
-    my $catch = Try::Tiny::SmartCatch::Catch::All->new ($block);
+    my $catch = Try::Tiny::SmartCatch::Catch::Default->new ($block);
     return $catch, @_;
 }
 
@@ -336,7 +336,7 @@ package # hide from PAUSE
     }
 }
 
-package Try::Tiny::SmartCatch::Catch::All;
+package Try::Tiny::SmartCatch::Catch::Default;
 {
     sub new {
         my $self = {};
@@ -346,7 +346,7 @@ package Try::Tiny::SmartCatch::Catch::All;
     }
 }
 
-package Try::Tiny::SmartCatch::Catch;
+package Try::Tiny::SmartCatch::Catch::When;
 {
     sub new {
         my $self = {};
