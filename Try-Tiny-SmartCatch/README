@@ -1,4 +1,4 @@
-Try-Tiny-Extended
+Try-Tiny-SmartCatch
 
 Module for easy handling exceptions.
 
@@ -8,7 +8,7 @@ Provides set of functions:
  * catch_all
  * finally 
 
-Try::Tiny::Extended give you the same posibilities as Try::Tiny, but 
+Try::Tiny::SmartCatch give you the same posibilities as Try::Tiny, but 
 also allow you to catch only certain types of exceptions.
 Additionally change a little it's syntax to use explicit sub blocks.
 
@@ -26,15 +26,15 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Try::Tiny::Extended
+    perldoc Try::Tiny::SmartCatch
 
 You can also look for information at:
 
-    Try::Tiny::Extended home & source code
-        https://github.com/mysz/try-tiny-extended
+    Try::Tiny::SmartCatch home & source code
+        https://github.com/mysz/try-tiny-smartcatch
 
     Issue tracker (report bugs here)
-        https://github.com/mysz/try-tiny-extended/issues
+        https://github.com/mysz/try-tiny-smartcatch/issues
 
 LICENSE AND COPYRIGHT
 

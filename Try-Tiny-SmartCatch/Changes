@@ -1,5 +1,7 @@
-Revision history for Try-Tiny-Extended
+Revision history for Try-Tiny-SmartCatch
 
+0.2 2012-05-24
+    Rename from Try::Tiny::Extended to Try::Tiny::SmartCatch (thank for suggestion to Matt S Trout <mst@shadowcat.co.uk>)
 0.1 2012-04-30
     Initial version.
 
