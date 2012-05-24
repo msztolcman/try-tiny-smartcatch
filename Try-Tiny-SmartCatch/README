@@ -4,8 +4,8 @@ Module for easy handling exceptions.
 
 Provides set of functions:
  * try
- * catch
- * catch_all
+ * catch_when
+ * catch_default
  * finally 
 
 Try::Tiny::SmartCatch give you the same posibilities as Try::Tiny, but 

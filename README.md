@@ -23,7 +23,7 @@ Run some code and catch all exceptions:
     try sub {
         die ('some error');
     },
-    catch_all sub {
+    catch_default sub {
         say "Caught an exception: $_";
     };
 
@@ -32,7 +32,7 @@ Catch only exceptions containing string 'error' in message:
     try sub {
         die ('some error');
     },
-    catch 'error' => sub {
+    catch_when 'error' => sub {
         say 'Caught exception with "error" substring in message';
     };
 
@@ -41,7 +41,7 @@ Or nearly the same with regexps:
     try sub {
         die ('some error1');
     },
-    catch qr/\berror\d\b/ => sub {
+    catch_when qr/\berror\d\b/ => sub {
         say 'Caught exception message matched to regexp: "\berror\d\b"';
     };
 
@@ -50,7 +50,7 @@ Catch only exceptions of `BaseError` class:
     try sub {
         die (BaseError->new ('some error'));
     },
-    catch 'BaseError' => sub {
+    catch_when 'BaseError' => sub {
         say 'Caught "BaseError" exception';
     };
 
@@ -59,7 +59,7 @@ Catch exceptions `Error1` or `Error2`:
     try sub {
         die (Error1->new ('some error'));
     },
-    catch [qw/Error1 Error2/] => sub {
+    catch_when [qw/Error1 Error2/] => sub {
         say 'Caught "Error1" or "Error2" exception';
     };
 
@@ -68,7 +68,7 @@ Catch exceptions inherited from ArithmeticError:
     try sub {
         die (OverflowError->new ('some error'));
     },
-    catch 'ArithmeticError' => sub {
+    catch_when 'ArithmeticError' => sub {
         say 'Caught some arithmetic error';
     };
 
@@ -77,7 +77,7 @@ Catch exception and run `finally` block:
     try sub {
         die ('some error');
     },
-    catch 'error' => sub {
+    catch_when 'error' => sub {
         say 'Caught some error');
     },
     finally sub {

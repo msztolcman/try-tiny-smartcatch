@@ -1,7 +1,10 @@
 Revision history for Try-Tiny-SmartCatch
 
 0.2 2012-05-24
-    Rename from Try::Tiny::Extended to Try::Tiny::SmartCatch (thank for suggestion to Matt S Trout <mst@shadowcat.co.uk>)
+    Few changes suggested by: mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> (thanks!):
+    - rename from Try::Tiny::Extended to Try::Tiny::SmartCatch
+    - rename function Try::Tiny::SmartCatch::catch -> Try::Tiny::SmartCatch::catch_when
+    - rename function Try::Tiny::SmartCatch::catch_all -> Try::Tiny::SmartCatch::catch_default
 0.1 2012-04-30
     Initial version.
 
