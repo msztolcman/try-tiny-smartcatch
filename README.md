@@ -8,12 +8,12 @@ Syntax
 ======
 
 ```perl
-    try sub {}, # at least one try block
-    catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
-    catch_when 'exception message' => sub {},
-    catch_when qr/exception  message regexp/ => sub {},
-    catch_default sub {}, # zero or one catch_default block
-    finally sub {}; #zero or more finally blocks
+try sub {}, # at least one try block
+catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
+catch_when 'exception message' => sub {},
+catch_when qr/exception  message regexp/ => sub {},
+catch_default sub {}, # zero or one catch_default block
+finally sub {}; #zero or more finally blocks
 ```
 
 Description
@@ -67,39 +67,39 @@ Text exceptions
 Catch only exceptions containing string 'No such file or directory' in message:
 
 ```perl
-    try sub {
-        my ($fh, );
-        open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
-    },
-    catch_when 'No such file or directory' => sub {
-        say 'caught error: ', $_;
-    };
+try sub {
+    my ($fh, );
+    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+},
+catch_when 'No such file or directory' => sub {
+    say 'caught error: ', $_;
+};
 ```
 
 Or nearly the same with regexps, but case insensitive:
 
 ```perl
-    try sub {
-        my ($fh, );
-        open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
-    },
-    catch_when qr/no such file or directory/i => sub {
-        say 'caught error: ', $_;
-    };
+try sub {
+    my ($fh, );
+    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+},
+catch_when qr/no such file or directory/i => sub {
+    say 'caught error: ', $_;
+};
 ```
 
 We can mix both types:
 
 ```perl
-    try sub {
-        my ($fh, );
-        open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+try sub {
+    my ($fh, );
+    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
 
-        # some operations on file
-    },
-    catch_when ['No such file or directory', qr/Some.+other.+text/i] => sub {
-        say 'caught error: ', $_;
-    };
+    # some operations on file
+},
+catch_when ['No such file or directory', qr/Some.+other.+text/i] => sub {
+    say 'caught error: ', $_;
+};
 ```
 
 Object exceptions
@@ -122,23 +122,23 @@ Exception
 It's easy now to respond to suitable error:
 
 ```perl
-    my ($fh, );
-    try sub {
-        die (FileNotFoundException->new (qq/File not found/))
-            if (!-f $path);
-        die (PermissionsException->new (qq/Can't read file: not enough permissions/))
-            if (!-r $path);
-        open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+my ($fh, );
+try sub {
+    die (FileNotFoundException->new (qq/File not found/))
+        if (!-f $path);
+    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+        if (!-r $path);
+    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
-        # make some file operations here
-    },
-    catch_when 'FileNotFoundException' => sub {
-        open ($fh, '>', $path);
-        close ($fh);
-    },
-    catch_when 'PermissionsException' => sub {
-        mail ('me@example.com', "Permission error at $path: ", $_);
-    };
+    # make some file operations here
+},
+catch_when 'FileNotFoundException' => sub {
+    open ($fh, '>', $path);
+    close ($fh);
+},
+catch_when 'PermissionsException' => sub {
+    mail ('me@example.com', "Permission error at $path: ", $_);
+};
 ```
 
 In example above we have different reactions dependent on type of exception. If
@@ -150,23 +150,23 @@ Of course, it's easy to catch 2 or more exceptions types, for example
 same way:
 
 ```perl
-    my ($fh, );
-    try sub {
-        die (FileNotFoundException->new (qq/File not found/))
-            if (!-f $path);
-        die (PermissionsException->new (qq/Can't read file: not enough permissions/))
-            if (!-r $path);
-        open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+my ($fh, );
+try sub {
+    die (FileNotFoundException->new (qq/File not found/))
+        if (!-f $path);
+    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+        if (!-r $path);
+    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
-        # make some file operations here
-    },
-    catch_when 'FileNotFoundException' => sub {
-        open ($fh, '>', $path);
-        close ($fh);
-    },
-    catch_when ['PermissionsException', 'RuntimeException'] => sub {
-        mail ('me@example.com', "Some error at $path: ", $_);
-    };
+    # make some file operations here
+},
+catch_when 'FileNotFoundException' => sub {
+    open ($fh, '>', $path);
+    close ($fh);
+},
+catch_when ['PermissionsException', 'RuntimeException'] => sub {
+    mail ('me@example.com', "Some error at $path: ", $_);
+};
 ```
 
 But what if we want to catch every exception related to IO? Well, to make it
@@ -174,63 +174,63 @@ harder, we want to create empty file if it doesn't exists yet, but sent an
 email in any other ```IOException```. For example:
 
 ```perl
-    my ($fh, );
-    try sub {
-        die (FileNotFoundException->new (qq/File not found/))
-            if (!-f $path);
-        die (PermissionsException->new (qq/Can't read file: not enough permissions/))
-            if (!-r $path);
-        open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+my ($fh, );
+try sub {
+    die (FileNotFoundException->new (qq/File not found/))
+        if (!-f $path);
+    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+        if (!-r $path);
+    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
-        # make some file operations here
-    },
-    catch_when 'FileNotFoundException' => sub {
-        open ($fh, '>', $path);
-        close ($fh);
-    },
-    # we catch here any IOException, also subclasses of it
-    catch_when 'IOException' => sub {
-        mail ('me@example.com', "Some error at $path: ", $_);
-    };
+    # make some file operations here
+},
+catch_when 'FileNotFoundException' => sub {
+    open ($fh, '>', $path);
+    close ($fh);
+},
+# we catch here any IOException, also subclasses of it
+catch_when 'IOException' => sub {
+    mail ('me@example.com', "Some error at $path: ", $_);
+};
 ```
 
 Hm, we also should always close file handler, so we can use ```finally``` block:
 
 ```perl
-    my ($fh, );
-    try sub {
-        die (FileNotFoundException->new (qq/File not found/))
-            if (!-f $path);
-        die (PermissionsException->new (qq/Can't read file: not enough permissions/))
-            if (!-r $path);
-        open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+my ($fh, );
+try sub {
+    die (FileNotFoundException->new (qq/File not found/))
+        if (!-f $path);
+    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+        if (!-r $path);
+    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
-        # make some file operations here
-    },
-    # This catch block is specified before block of IOException
-    catch_when 'FileNotFoundException' => sub {
-        open ($fh, '>', $path);
-        close ($fh);
-    },
-    # we catch here any IOException, also subclasses of it
-    catch_when 'IOException' => sub {
-        mail ('me@example.com', "Some error at $path: ", $_);
-    },
-    finally sub {
-        close ($fh) if ($fh);
-    };
+    # make some file operations here
+},
+# This catch block is specified before block of IOException
+catch_when 'FileNotFoundException' => sub {
+    open ($fh, '>', $path);
+    close ($fh);
+},
+# we catch here any IOException, also subclasses of it
+catch_when 'IOException' => sub {
+    mail ('me@example.com', "Some error at $path: ", $_);
+},
+finally sub {
+    close ($fh) if ($fh);
+};
 ```
 
 Sometimes we want to just silence errors:
 
 ```perl
-    use autodie qw/open/;
+use autodie qw/open/;
 
-    try sub {
-        open (my $fh, '<', '/etc/fstab');
+try sub {
+    open (my $fh, '<', '/etc/fstab');
 
-        # some operations on /etc/fstab here
-    };
+    # some operations on /etc/fstab here
+};
 ```
 
 In example above we just try to open /etc/fstab, and do some operations there.
@@ -240,12 +240,12 @@ if there were any error.
 There is also posibility to catch all types of exceptions:
 
 ```perl
-    try sub {
-        die ('some error');
-    },
-    catch_default sub {
-        say "Caught an exception: $_";
-    };
+try sub {
+    die ('some error');
+},
+catch_default sub {
+    say "Caught an exception: $_";
+};
 ```
 
 Return values
@@ -259,10 +259,10 @@ If there is an exception inside ```try``` block, return value of whole block
 is return value of ```catch_*``` block whis caught this kind exception. For example:
 
 ```perl
-    my $value = try sub { die ('error') },
-    catch_when 'error' => sub { say 'error'; 1 },
-    catch_when 'exception' => sub { say 'exception'; 2 },
-    catch_default sub { say 'default error handling'; 3 };
+my $value = try sub { die ('error') },
+catch_when 'error' => sub { say 'error'; 1 },
+catch_when 'exception' => sub { say 'exception'; 2 },
+catch_default sub { say 'default error handling'; 3 };
 ```
 
 In ```$value``` you get ```1```. If the message in ```try``` block will
