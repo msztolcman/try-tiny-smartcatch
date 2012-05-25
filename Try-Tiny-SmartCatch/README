@@ -1,6 +1,6 @@
 Try-Tiny-SmartCatch
 
-Module for easy handling exceptions.
+Lightweight Perl module for powerful exceptions handling.
 
 Provides set of functions:
  * try
@@ -20,6 +20,11 @@ To install this module, run the following commands:
 	make
 	make test
 	make install
+
+Or just:
+    cpan Try::Catch::SmartCatch
+
+:)
 
 SUPPORT AND DOCUMENTATION
 
