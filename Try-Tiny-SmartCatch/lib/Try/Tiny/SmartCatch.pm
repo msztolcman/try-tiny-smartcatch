@@ -416,7 +416,8 @@ L<http://search.cpan.org/dist/Try-Tiny-SmartCatch/>
 
 =head1 ACKNOWLEDGEMENTS
 
-Yuval Kogman for his L<Try::Tiny> module :)
+Yuval Kogman for his L<Try::Tiny> module
+mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> - for good package name and few great features
 
 =head1 LICENSE AND COPYRIGHT
 
