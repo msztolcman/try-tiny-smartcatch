@@ -282,7 +282,7 @@ Caveats
 =======
 
 ```Try::Tiny::SmartCatch``` bases on ```Try::Tiny``` code, so all caveats
-described in [Try::Tiny Caveats section](http://metacpan.org/module/Try::Tiny#CAVEATS)
+described in [```Try::Tiny``` Caveats section](http://metacpan.org/module/Try::Tiny#CAVEATS)
 works here too. Please, read [manual from ```Try::Tiny``` module](http://metacpan.org/module/Try::Tiny).
 
 Acknowledgements
