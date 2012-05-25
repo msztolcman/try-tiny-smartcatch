@@ -50,8 +50,7 @@ sub test_function {
 test_function ();
 ```
 
-Above snippet produce us text on STDOUT:
-```Hello!```
+Above snippet produce us text on STDOUT: ```Hello!```
 
 But more obvious would be no output... This is because of implicit subroutine
 created with braces: ```{}``` after ```try```, ```catch``` or ```finally```
