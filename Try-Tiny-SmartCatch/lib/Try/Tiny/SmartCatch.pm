@@ -19,7 +19,7 @@ $Carp::Internal{+__PACKAGE__}++;
 
 =head1 NAME
 
-Try::Tiny::SmartCatch - Try::Tiny with some additional features
+Try::Tiny::SmartCatch - lightweight Perl module for powerful exceptions handling
 
 =head1 VERSION
 
@@ -86,6 +86,8 @@ This gave you less chances to forgot that C<return> statement exits just from ex
 handler, not surrounding function call.
 
 If you want to read about other assumptions, read about our predecessor: L<Try::Tiny>.
+
+More documentation for C<Try::Tiny::SmartCatch> is at package home: L<http://github.com/mysz/try-tiny-smartcatch>
 
 =head1 EXPORT
 
@@ -184,7 +186,7 @@ sub try ($;@) {
     if ($failed) {
         # if we got an error, invoke the catch block.
         if (scalar (@catch_when) || $catch_default) {
-            my ($catch_data, $catched, );
+            my ($catch_data, );
 
             # This works like given($error), but is backwards compatible and
             # sets $_ in the dynamic scope for the body of C<$catch>
@@ -299,8 +301,8 @@ sub catch_default ($;@) {
 
 =head2 finally ($;@)
 
-Works exactly like L<Try::Tiny> C<finally> function (OK, again, evident sub
-instead of anonymous):
+Works exactly like L<Try::Tiny> C<finally> function (OK, again, explicit sub
+instead of implicit):
 
     try sub {
         # some code
@@ -371,6 +373,10 @@ package Try::Tiny::SmartCatch::Catch::When;
 
 =over 4
 
+=item L<https://github.com/mysz/try-tiny-smartcatch>
+
+Try::Tiny::SmartCatch home.
+
 =item L<Try::Tiny>
 
 Minimal try/catch with proper localization of $@, base of L<Try::Catch::SmartCatch>
@@ -388,7 +394,7 @@ Marcin Sztolcman, C<< <marcin at urzenia.net> >>
 =head1 BUGS
 
 Please report any bugs or feature requests through the web interface at
-L<https://github.com/mysz/try-tiny-smartcatch/issues>.
+L<http://github.com/mysz/try-tiny-smartcatch/issues>.
 
 =head1 SUPPORT
 
@@ -402,11 +408,11 @@ You can also look for information at:
 
 =item * Try::Tiny::SmartCatch home & source code
 
-L<https://github.com/mysz/try-tiny-smartcatch>
+L<http://github.com/mysz/try-tiny-smartcatch>
 
 =item * Issue tracker (report bugs here)
 
-L<https://github.com/mysz/try-tiny-smartcatch/issues>
+L<http://github.com/mysz/try-tiny-smartcatch/issues>
 
 =item * Search CPAN
 
