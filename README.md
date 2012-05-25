@@ -13,7 +13,7 @@ Syntax
     catch_when 'exception message' => sub {},
     catch_when qr/exception  message regexp/ => sub {},
     catch_default sub {}, # zero or one catch_default block
-    finally {}; #zero or more finally blocks
+    finally sub {}; #zero or more finally blocks
 ```
 
 Description
