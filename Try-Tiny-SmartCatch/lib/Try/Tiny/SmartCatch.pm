@@ -23,11 +23,11 @@ Try::Tiny::SmartCatch - lightweight Perl module for powerful exceptions handling
 
 =head1 VERSION
 
-Version 0.2
+Version 0.3
 
 =cut
 
-$VERSION = '0.2';
+$VERSION = '0.3';
 
 =head1 SYNOPSIS
 
