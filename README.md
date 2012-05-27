@@ -39,7 +39,7 @@ creates implicit subroutines:
 sub test_function {
     try {
         # yes, here is implicit subroutine!
-        # return statement here exits just from try block
+        # return statement here exits just from try block,
         # not from test_function!
         return 1;
     };
@@ -50,13 +50,16 @@ sub test_function {
 test_function ();
 ```
 
-Above snippet produce us text on STDOUT: ```Hello!```
+Above snippet produces us text on STDOUT: ```Hello!```
 
 But more obvious would be no output... This is because of implicit subroutine
 created with braces: ```{}``` after ```try```, ```catch``` or ```finally```
 from ```Try::Tiny```. ```Try::Tiny::SmartCatch``` is more explicit - you must
-always use ```sub``` when defining blocks (look at Syntax below).
+always use ```sub``` when defining blocks (look at [Syntax](#Syntax) above).
 
+An exception object or message is passed to defined blocks in two ways:
+* in ```$_``` variable
+* as function arguments, so through ```@_``` array.
 
 Piece of code
 =============
