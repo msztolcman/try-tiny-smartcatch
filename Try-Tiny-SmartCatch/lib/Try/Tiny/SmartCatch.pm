@@ -127,7 +127,8 @@ sub try ($;@) {
             push (@catch_when, map { [ $_, $$code_ref{code}, ] } (@{$code_ref->get_types}));
         }
         elsif ($ref eq 'Try::Tiny::SmartCatch::Catch::Default') {
-            $catch_default //= $$code_ref{code};
+            $catch_default = $$code_ref{code}
+                if (!defined ($catch_default));
         }
         elsif ($ref eq 'Try::Tiny::SmartCatch::Finally') {
             push (@finally, ${$code_ref});
@@ -365,7 +366,7 @@ package Try::Tiny::SmartCatch::Catch::When;
 
     sub get_types {
         my ($self, ) = @_;
-        return wantarray ? @{$$self{types} // []} : $$self{types};
+        return wantarray ? @{defined ($$self{types}) ? $$self{types} : []} : $$self{types};
     }
 }
 
