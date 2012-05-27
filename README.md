@@ -16,6 +16,15 @@ catch_default sub {}, # zero or one catch_default block
 finally sub {}; #zero or more finally blocks
 ```
 
+But first...
+============
+
+Please, read [Try::Tiny](https://metacpan.org/module/Try::Tiny) manual first.
+Most code of ```Try::Tiny::SmartCatch``` is borrowed from it, so most caveats,
+problems or goals is the same!
+
+I don't want to copy manual section from it too ;)
+
 Description
 ===========
 
