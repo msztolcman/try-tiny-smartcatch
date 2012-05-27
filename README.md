@@ -300,5 +300,5 @@ works here too. Please, read [manual from ```Try::Tiny``` module](http://metacpa
 Acknowledgements
 ================
 
-Yuval Kogman for his [Try::Tiny](https://metacpan.org/module/Try::Tiny) module
-mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> - for good package name and few great features
+* Yuval Kogman for his [Try::Tiny](https://metacpan.org/module/Try::Tiny) module
+* mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> - for good package name and few great features
