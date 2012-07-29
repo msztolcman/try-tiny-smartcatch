@@ -13,7 +13,7 @@ BEGIN {
     @ISA = qw(Exporter);
 }
 
-@EXPORT = @EXPORT_OK = qw(try catch_when catch_default finally);
+@EXPORT = @EXPORT_OK = qw(try catch_when catch_default further finally);
 
 $Carp::Internal{+__PACKAGE__}++;
 
@@ -75,6 +75,18 @@ $VERSION = '0.3';
         # and finally run some other code
     };
 
+    # try some code, and execute the other if it pass
+    try sub {
+        say 'some code';
+        return 'Hello, world!';
+    },
+    catch_default sub {
+        say 'some exception caught: ', $_;
+    },
+    further sub {
+        say 'all passed, no exceptions found. Message from try block: ' . $_[0];
+    };
+
 =head1 DESCRIPTION
 
 C<Try::Tiny::SmartCatch> is a simple way to handle exceptions. It's mostly a copy
@@ -110,11 +122,7 @@ The only difference is that here must be given evident sub reference, not anonym
 sub try ($;@) {
     my ( $try, @code_refs ) = @_;
 
-    # we need to save this here, the eval block will be in scalar context due
-    # to $failed
-    my $wantarray = wantarray;
-
-    my ( @catch_when, $catch_default, @finally );
+    my ( @catch_when, $catch_default, $further, @finally );
 
     # find labeled blocks in the argument list.
     # catch and finally tag the blocks by blessing a scalar reference to them.
@@ -132,6 +140,10 @@ sub try ($;@) {
         }
         elsif ($ref eq 'Try::Tiny::SmartCatch::Finally') {
             push (@finally, ${$code_ref});
+        }
+        elsif ($ref eq 'Try::Tiny::SmartCatch::Further') {
+            $further = ${$code_ref}
+                if (!defined ($further));
         }
         else {
             require Carp;
@@ -158,16 +170,7 @@ sub try ($;@) {
         $failed = not eval {
             $@ = $prev_error;
 
-            # evaluate the try block in the correct context
-            if ( $wantarray ) {
-                @ret = $try->();
-            }
-            elsif ( defined $wantarray ) {
-                $ret[0] = $try->();
-            }
-            else {
-                $try->();
-            };
+            @ret = $try->();
 
             return 1; # properly set $fail to false
         };
@@ -218,8 +221,11 @@ sub try ($;@) {
         return;
     }
     else {
+        @ret = $further->(@ret)
+            if ($further);
+
         # no failure, $@ is back to what it was, everything is fine
-        return $wantarray ? @ret : $ret[0];
+        return wantarray ? @ret : $ret[0];
     }
 }
 
@@ -298,6 +304,36 @@ sub catch_default ($;@) {
 
     my $catch = Try::Tiny::SmartCatch::Catch::Default->new ($block);
     return $catch, @_;
+}
+
+=head2 further ($;@)
+
+C<further> block is executed after C<try> clause, if none of C<catch_when> or
+C<catch_default> blocks was executed (it means, if no exception occured).
+It;s executed before C<finally> blocks.
+
+    try sub {
+        # some code
+    },
+    catch_when 'MyException' => sub {
+        say 'caught MyException exception';
+    },
+    further sub {
+        say 'No exception was raised';
+    },
+    finally sub {
+        say 'executed always';
+    };
+
+=cut
+
+sub further ($;@) {
+    my ($block, @rest, ) = @_;
+
+    return (
+        bless (\$block, 'Try::Tiny::SmartCatch::Further'),
+        @rest
+    );
 }
 
 =head2 finally ($;@)
