@@ -12,6 +12,7 @@ try sub {}, # at least one try block
 catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
 catch_when 'exception message' => sub {},
 catch_when qr/exception  message regexp/ => sub {},
+further sub {}, # if no exception is raised, execute further block
 catch_default sub {}, # zero or one catch_default block
 finally sub {}; #zero or more finally blocks
 ```
@@ -39,8 +40,8 @@ a text message (like: ```die ('message')```), there can be specified part of
 message to test for.
 
 There are also explicit ```sub``` blocks. In opposite to ```Try::Tiny```,
-every block in ```Try::Tiny::SmartCatch```: ```try```, ```catch_when```, ```catch_default```
-and ```finally``` must have explicit subroutines specified. Thanks to trick
+every block in ```Try::Tiny::SmartCatch```: ```try```, ```catch_when```, ```catch_default```,
+```further``` and ```finally``` must have explicit subroutines specified. Thanks to trick
 with function prototype, calling ```Try::Tiny::try``` or ```Try::Tiny::catch```
 creates implicit subroutines:
 
@@ -206,6 +207,50 @@ catch_when 'IOException' => sub {
 };
 ```
 
+Further block
+-------------
+
+```further``` block is called only if no exception is raised from ```try``` clause.
+It's usefull, when you want to separate some blocks of code. ```further``` clause
+has passed return value from ```try``` subroutine.
+
+Return value from ```further``` block is returned as return value of ```try``` call.
+
+```perl
+my $data_length = try sub {
+    my ($fh, );
+    open ($fh, '<', '/etc/fstab') or die ('Can\'t open file: ' . $!);
+    return $fh;
+},
+catch_all sub {
+    say $_;
+},
+further sub {
+    my ($fh, ) = @_;
+    
+    my ($string, );
+    try sub {
+        sysread ($fh, $string, -s $fh, 0) or die ($!);
+    },
+    catch_all sub {
+        say $_;
+    },
+    further sub {
+        say 'Read whole file at once!';
+    };
+
+    return length ($string);
+},
+finally sub {
+    close ($fh);
+};
+
+say 'We read ' . $data_length ' bytes!';
+```
+
+Finally block
+-------------
+
 Hm, we also should always close file handler, so we can use ```finally``` block:
 
 ```perl
@@ -232,6 +277,9 @@ finally sub {
     close ($fh) if ($fh);
 };
 ```
+
+Other
+-----
 
 Sometimes we want to just silence errors:
 
@@ -267,6 +315,9 @@ When ```try``` block evaluates and exception will not be raised, it returns
 given anonymous subroutine return value. So, if given block returns some
 object, as a return value of ```try``` block you got this object.
 
+This behavior is slightly modified if there is specified ```further``` block - as
+return value of whole ```try``` call is given return value from ```further``` block.
+
 If there is an exception inside ```try``` block, return value of whole block
 is return value of ```catch_*``` block whis caught this kind exception. For example:
 
@@ -274,19 +325,22 @@ is return value of ```catch_*``` block whis caught this kind exception. For exam
 my $value = try sub { die ('error') },
 catch_when 'error' => sub { say 'error'; 1 },
 catch_when 'exception' => sub { say 'exception'; 2 },
-catch_default sub { say 'default error handling'; 3 };
+catch_default sub { say 'default error handling'; 3 },
+further sub { say 'further is called'; 4 };
 ```
 
 In ```$value``` you get ```1```. If the message in ```try``` block will
 change to 'exception', ```$value``` will have ```2```. If the message will
 change into something other value, in ```$value``` will be an integer ```3```.
+In case, when in ```try``` block we don't raise an exception, in ```$value``` you
+got ```4```.
 
 Other
 -----
 
 ```try``` block must exists exactly once. ```catch_when``` and ```finally```
-blocks are allowed to exists zero or more times. ```catch_default``` must
-be zero or one time.
+blocks are allowed to exists zero or more times. ```catch_default``` and ```further```
+must be zero or one time.
 
 The only required block is ```try```, any other block can be bypassed.
 
