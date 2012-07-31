@@ -2,7 +2,7 @@ Revision history for Try-Tiny-SmartCatch
 
 0.3 
     - do not use features from perl 5.10, maybe it repair working module on 5.8.x
-    - added further block handling
+    - added 'then' block handling
     - removed calling try blocks in same context as try subroutine
 0.2 2012-05-24
     Few changes suggested by: mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> (thanks!):

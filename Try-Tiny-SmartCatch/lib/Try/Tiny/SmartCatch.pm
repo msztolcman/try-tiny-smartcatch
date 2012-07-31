@@ -13,7 +13,7 @@ BEGIN {
     @ISA = qw(Exporter);
 }
 
-@EXPORT = @EXPORT_OK = qw(try catch_when catch_default further finally);
+@EXPORT = @EXPORT_OK = qw(try catch_when catch_default then finally);
 
 $Carp::Internal{+__PACKAGE__}++;
 
@@ -83,7 +83,7 @@ $VERSION = '0.3';
     catch_default sub {
         say 'some exception caught: ', $_;
     },
-    further sub {
+    then sub {
         say 'all passed, no exceptions found. Message from try block: ' . $_[0];
     };
 
@@ -122,7 +122,7 @@ The only difference is that here must be given evident sub reference, not anonym
 sub try ($;@) {
     my ( $try, @code_refs ) = @_;
 
-    my ( @catch_when, $catch_default, $further, @finally );
+    my ( @catch_when, $catch_default, $then, @finally );
 
     # find labeled blocks in the argument list.
     # catch and finally tag the blocks by blessing a scalar reference to them.
@@ -141,9 +141,9 @@ sub try ($;@) {
         elsif ($ref eq 'Try::Tiny::SmartCatch::Finally') {
             push (@finally, ${$code_ref});
         }
-        elsif ($ref eq 'Try::Tiny::SmartCatch::Further') {
-            $further = ${$code_ref}
-                if (!defined ($further));
+        elsif ($ref eq 'Try::Tiny::SmartCatch::Then') {
+            $then = ${$code_ref}
+                if (!defined ($then));
         }
         else {
             require Carp;
@@ -221,8 +221,8 @@ sub try ($;@) {
         return;
     }
     else {
-        @ret = $further->(@ret)
-            if ($further);
+        @ret = $then->(@ret)
+            if ($then);
 
         # no failure, $@ is back to what it was, everything is fine
         return wantarray ? @ret : $ret[0];
@@ -306,9 +306,9 @@ sub catch_default ($;@) {
     return $catch, @_;
 }
 
-=head2 further ($;@)
+=head2 then ($;@)
 
-C<further> block is executed after C<try> clause, if none of C<catch_when> or
+C<then> block is executed after C<try> clause, if none of C<catch_when> or
 C<catch_default> blocks was executed (it means, if no exception occured).
 It;s executed before C<finally> blocks.
 
@@ -318,7 +318,7 @@ It;s executed before C<finally> blocks.
     catch_when 'MyException' => sub {
         say 'caught MyException exception';
     },
-    further sub {
+    then sub {
         say 'No exception was raised';
     },
     finally sub {
@@ -327,11 +327,11 @@ It;s executed before C<finally> blocks.
 
 =cut
 
-sub further ($;@) {
+sub then ($;@) {
     my ($block, @rest, ) = @_;
 
     return (
-        bless (\$block, 'Try::Tiny::SmartCatch::Further'),
+        bless (\$block, 'Try::Tiny::SmartCatch::Then'),
         @rest
     );
 }

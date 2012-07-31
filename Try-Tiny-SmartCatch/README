@@ -6,7 +6,7 @@ Provides set of functions:
  * try
  * catch_when
  * catch_default
- * further
+ * then
  * finally 
 
 Try::Tiny::SmartCatch give you the same posibilities as Try::Tiny, but 
