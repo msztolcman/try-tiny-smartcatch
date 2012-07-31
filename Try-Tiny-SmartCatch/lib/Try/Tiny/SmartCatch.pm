@@ -416,7 +416,7 @@ Try::Tiny::SmartCatch home.
 
 =item L<Try::Tiny>
 
-Minimal try/catch with proper localization of $@, base of L<Try::Catch::SmartCatch>
+Minimal try/catch with proper localization of $@, base of L<Try::Tiny::SmartCatch>
 
 =item L<TryCatch>
 
