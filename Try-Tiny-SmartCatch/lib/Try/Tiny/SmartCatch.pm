@@ -122,7 +122,9 @@ The only difference is that here must be given evident sub reference, not anonym
 sub try ($;@) {
     my ( $try, @code_refs ) = @_;
 
-    my ( @catch_when, $catch_default, $then, @finally );
+    my ( @catch_when, $catch_default, $then, @finally, $wantarray );
+
+    $wantarray = wantarray;
 
     # find labeled blocks in the argument list.
     # catch and finally tag the blocks by blessing a scalar reference to them.
@@ -170,7 +172,15 @@ sub try ($;@) {
         $failed = not eval {
             $@ = $prev_error;
 
-            @ret = $try->();
+            if ($wantarray || $then) {
+                @ret = $try->();
+            }
+            elsif (defined ($wantarray)) {
+                $ret[0] = $try->();
+            }
+            else {
+                $try->();
+            }
 
             return 1; # properly set $fail to false
         };
@@ -221,11 +231,21 @@ sub try ($;@) {
         return;
     }
     else {
-        @ret = $then->(@ret)
-            if ($then);
+        if ($then) {
+            if ($wantarray) {
+                @ret = $then->(@ret);
+            }
+            elsif (defined ($wantarray)) {
+                $ret[0] = $then->(@ret);
+            }
+            else {
+                $then->(@ret);
+            }
+        }
 
         # no failure, $@ is back to what it was, everything is fine
-        return wantarray ? @ret : $ret[0];
+        return if (!defined ($wantarray));
+        return $wantarray ? @ret : $ret[0];
     }
 }
 

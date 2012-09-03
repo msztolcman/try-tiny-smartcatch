@@ -5,7 +5,7 @@
 use strict;
 #use warnings;
 
-use Test::More tests => 22;
+use Test::More tests => 26;
 
 BEGIN { use_ok 'Try::Tiny::SmartCatch' };
 
@@ -76,6 +76,12 @@ throws_ok {
 	like( (try sub { die "foo" }, catch_default sub { $_ }), qr/foo/, "catch block evaluated" );
 	is( $@, "magic", '$@ untouched' );
 }
+
+is( scalar(try sub { "foo", "bar", "gorch" }), "gorch", "scalar context try" );
+is_deeply( [ try sub {qw(foo bar gorch)} ], [qw(foo bar gorch)], "list context try" );
+
+is( scalar(try sub { die }, catch_default sub { "foo", "bar", "gorch" }), "gorch", "scalar context catch" );
+is_deeply( [ try sub { die }, catch_default sub {qw(foo bar gorch)} ], [qw(foo bar gorch)], "list context catch" );
 
 {
 	my ($sub) = catch_default sub { my $a = $_; };
