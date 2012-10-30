@@ -4,8 +4,6 @@ use 5.006;
 use strict;
 use warnings;
 
-use Scalar::Util qw/ blessed /;
-
 use vars qw/@EXPORT @EXPORT_OK $VERSION @ISA/;
 
 BEGIN {
@@ -34,7 +32,7 @@ sub try($;@) {
         ## zero or more 'catch_when' blocks
         if ($ref_type eq 'Try::Tiny::SmartCatch::Catch::When') {
             ## we need to save same handler for many different exception types
-            push(@catch_when, map { [$_, $$code_ref{code}] } ($code_ref->get_types()));
+            push (@catch_when, $code_ref);
         }
         ## zero or one 'catch_default' blocks
         elsif ($ref_type eq 'Try::Tiny::SmartCatch::Catch::Default') {
@@ -102,21 +100,14 @@ sub try($;@) {
     if ($failed) {
         ## if we got an error, invoke the catch block.
         if (scalar(@catch_when) || $catch_default) {
-            my ($catch_data);
 
             ## This works like given($error), but is backwards compatible and
             ## sets $_ in the dynamic scope for the body of $catch
             for ($error) {
+                my ($catch_data);
                 foreach $catch_data (@catch_when) {
-                    if (
-                        (blessed($error) && $error->isa($$catch_data[0])) ||
-                        (!blessed($error) && (
-                            (ref($$catch_data[0]) eq 'Regexp' && $error =~ /$$catch_data[0]/) ||
-                            (!ref($$catch_data[0]) && index($error, $$catch_data[0]) > -1)
-                        ))
-                    ) {
-                        return &{$$catch_data[1]}($error);
-                    }
+                    return &{$$catch_data{code}}($error)
+                        if ($catch_data->for_error($error));
                 }
 
                 return &$catch_default($error)
@@ -212,31 +203,44 @@ package Try::Tiny::SmartCatch::Catch::Default;
 
 package Try::Tiny::SmartCatch::Catch::When;
 {
+    use Scalar::Util qw/ blessed /;
+
     sub new {
         my ($class, $code, $types) = @_;
 
-        my $self = { code => $code };
-        $self    = bless($self, $class);
-        $self->set_types($types) if (defined($types));
+        my $self = {
+            code  => $code,
+            types => (
+                ref($types) eq 'ARRAY' ? $types   :
+                defined($types)        ? [$types] :
+                                         []
+            ),
+        };
 
-        return $self;
+        return bless($self, $class);
     }
 
-    sub set_types {
-        my ($self, $types) = @_;
+    sub for_error {
+        my ($self, $error) = @_;
 
-        $$self{types} = ref($types) eq 'ARRAY' ? $types : [$types];
+        if (blessed($error)) {
+            foreach (@{$$self{types}}) {
+                return 1 if ($error->isa($_));
+            }
+        }
+        else {
+            my $type;
+            foreach $type (@{$$self{types}}) {
+                return 1 if (
+                    (ref($type) eq 'Regexp' && $error =~ /$type/) ||
+                    (!ref($type) && index($error, $type) > -1)
+                );
+            }
+        }
 
         return;
     }
 
-    sub get_types {
-        my ($self) = @_;
-
-        my $types = defined($$self{types}) ? $$self{types} : [];
-
-        return wantarray ? @$types : $types;
-    }
 }
 
 
