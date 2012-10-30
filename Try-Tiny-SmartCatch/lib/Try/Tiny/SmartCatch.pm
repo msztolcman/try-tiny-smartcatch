@@ -6,14 +6,14 @@ use warnings;
 
 use Scalar::Util qw/ blessed /;
 
-use vars qw(@EXPORT @EXPORT_OK $VERSION @ISA);
+use vars qw/@EXPORT @EXPORT_OK $VERSION @ISA/;
 
 BEGIN {
     require Exporter;
-    @ISA = qw(Exporter);
+    @ISA = qw/Exporter/;
 }
 
-@EXPORT = @EXPORT_OK = qw(try catch_when catch_default then finally);
+@EXPORT = @EXPORT_OK = qw/try catch_when catch_default then finally/;
 
 ++$Carp::Internal{+__PACKAGE__};
 
@@ -59,20 +59,14 @@ sub try($;@) {
 
     my ($error, $failed, $prev_error, @ret);
 
-    # save the value of $@ so we can set $@ back to it in the beginning of the eval
+    ## save the value of $@ so we can set $@ back to it in the beginning of the eval
     $prev_error = $@;
 
-    # FIXME consider using local $SIG{__DIE__} to accumulate all errors. It's
-    # not perfect, but we could provide a list of additional errors for
-    # $catch->();
-
     {
-        # localize $@ to prevent clobbering of previous value by a successful
-        # eval.
+        ## localize $@ to prevent clobbering of previous value by a successful eval.
         local $@;
 
-        # failed will be true if the eval dies, because 1 will not be returned
-        # from the eval body
+        ## failed will be true if the eval dies, because 1 will not be returned from the eval body
         $failed = not eval {
             $@ = $prev_error;
 
@@ -88,29 +82,30 @@ sub try($;@) {
                 &$try();
             }
 
-            return 1; # properly set $fail to false
+            ## properly set $fail to false
+            return 1;
         };
 
-        # copy $@ to $error; when we leave this scope, local $@ will revert $@
-        # back to its previous value
+        ## copy $@ to $error; when we leave this scope, local $@ will revert $@
+        ## back to its previous value
         $error = $@;
     }
 
-    # set up a scope guard to invoke the finally block at the end
+    ## set up a scope guard to invoke the finally block at the end
     my @guards =
         map {
             Try::Tiny::SmartCatch::ScopeGuard->_new($_, $failed ? $error : ())
         } @finally;
 
-    # at this point $failed contains a true value if the eval died, even if some
-    # destructor overwrote $@ as the eval was unwinding.
+    ## at this point $failed contains a true value if the eval died, even if some
+    ## destructor overwrote $@ as the eval was unwinding.
     if ($failed) {
-        # if we got an error, invoke the catch block.
+        ## if we got an error, invoke the catch block.
         if (scalar(@catch_when) || $catch_default) {
             my ($catch_data);
 
-            # This works like given($error), but is backwards compatible and
-            # sets $_ in the dynamic scope for the body of $catch
+            ## This works like given($error), but is backwards compatible and
+            ## sets $_ in the dynamic scope for the body of $catch
             for ($error) {
                 foreach $catch_data (@catch_when) {
                     if (
