@@ -17,4 +17,9 @@ WriteMakefile(
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Try-Tiny-SmartCatch-*' },
+    META_MERGE        => {
+        resources => {
+            repository  =>  'https://github.com/mysz/try-tiny-smartcatch',
+        },
+    },
 );
