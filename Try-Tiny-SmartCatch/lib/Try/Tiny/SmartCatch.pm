@@ -272,24 +272,21 @@ Version 0.4
 
 =head1 SYNOPSIS
 
-=begin perl
-use Try::Tiny::SmartCatch;
+    use Try::Tiny::SmartCatch;
 
-try sub {}, # at least one try block
-catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
-catch_when 'exception message' => sub {},
-catch_when qr/exception  message regexp/ => sub {},
-catch_default sub {}, # zero or one catch_default block
-then sub {}, # if no exception is raised, execute then block
-finally sub {}; #zero or more finally blocks
-
-use Try::Tiny::SmartCatch qw/throw/; # import only throw
-# You can import also all function at once:
-# use Try::Tiny::SmartCatch qw/:all/;
-throw('some exception');
-throw(SomeException->new ('message'));
-
-=end perl
+    try sub {}, # at least one try block
+    catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
+    catch_when 'exception message' => sub {},
+    catch_when qr/exception  message regexp/ => sub {},
+    catch_default sub {}, # zero or one catch_default block
+    then sub {}, # if no exception is raised, execute then block
+    finally sub {}; #zero or more finally blocks
+    
+    use Try::Tiny::SmartCatch qw/throw/; # import only throw
+    # You can import also all function at once:
+    # use Try::Tiny::SmartCatch qw/:all/;
+    throw('some exception');
+    throw(SomeException->new ('message'));
 
 =head1 DESCRIPTION
 
@@ -309,21 +306,18 @@ C<then> and C<finally> must have explicit subroutines specified. Thanks to trick
 with function prototype, calling C<Try::Tiny::try> or C<Try::Tiny::catch>
 creates implicit subroutines:
 
-=begin perl
-sub test_function {
-    try {
-        # yes, here is implicit subroutine!
-        # return statement here exits just from try block,
-        # not from test_function!
-        return 1;
-    };
-
-    say 'Hello!';
-}
-
-test_function();
-
-=end perl
+    sub test_function {
+        try {
+            # yes, here is implicit subroutine!
+            # return statement here exits just from try block,
+            # not from test_function!
+            return 1;
+        };
+    
+        say 'Hello!';
+    }
+    
+    test_function();
 
 Above snippet produces us text on STDOUT: C<Hello!>
 
@@ -342,17 +336,11 @@ by default). Currently it is an alias for C<die>, but is more explicit then C<di
 
 It can be imported separately:
 
-=begin perl
-use Try::Tiny::SmartCatch qw/throw/;
-
-=end perl
+    use Try::Tiny::SmartCatch qw/throw/;
 
 Or with rest of functions:
 
-=begin perl
-use Try::Tiny::SmartCatch qw/:all/;
-
-=end perl
+    use Try::Tiny::SmartCatch qw/:all/;
 
 =head1 EXPORT
 
@@ -374,17 +362,11 @@ By default exported are functions:
 
 You can also explicit import C<throw> function:
 
-=begin perl
-use Try::Tiny::SmartCatch qw/throw/;
-
-=end perl
+    use Try::Tiny::SmartCatch qw/throw/;
 
 Or all functions at all:
 
-=begin perl
-use Try::Tiny::SmartCatch qw/:all/;
-
-=end perl
+    use Try::Tiny::SmartCatch qw/:all/;
 
 =head1 SUBROUTINES/METHODS
 
@@ -394,12 +376,9 @@ Works like L<Try::Tiny> C<try> subroutine, here is nothing to add :)
 
 The only difference is that here must be given evident sub reference, not anonymous block:
 
-=begin perl
-try sub {
-    # some code
-};
-
-=end perl
+    try sub {
+        # some code
+    };
 
 =head2 catch_when($$;@)
 
@@ -407,73 +386,58 @@ Intended to be used in the second argument position of C<try>.
 
 Works similarly to L<Try::Tiny> C<catch> subroutine, but have a little different syntax:
 
-=begin perl
-try sub {
-    # some code
-},
-catch_when 'Exception1' => sub {
-    # catch only Exception1 exception
-},
-catch_when ['Exception1', 'Exception2'] => sub {
-    # catch Exception2 or Exception3 exceptions
-};
-
-=end
+    try sub {
+        # some code
+    },
+    catch_when 'Exception1' => sub {
+        # catch only Exception1 exception
+    },
+    catch_when ['Exception1', 'Exception2'] => sub {
+        # catch Exception2 or Exception3 exceptions
+    };
 
 If raised exception is a blessed reference (or object), C<Exception1> means that exception
 class has to be or inherits from C<Exception1> class. In other case, it search for given
 string in exception message (using C<index> function or regular expressions - depending on
 type of given operator). For example:
 
-=begin perl
-try sub {
-    throw('some exception message');
-},
-catch_when 'exception' => sub {
-    say 'exception caught!';
-};
-
-=end perl
+    try sub {
+        throw('some exception message');
+    },
+    catch_when 'exception' => sub {
+        say 'exception caught!';
+    };
 
 Other case:
 
-=begin perl
-try sub {
-    throw('some exception3 message');
-},
-catch_when qr/exception\d/ => sub {
-    say 'exception caught!';
-};
-
-=end perl
+    try sub {
+        throw('some exception3 message');
+    },
+    catch_when qr/exception\d/ => sub {
+        say 'exception caught!';
+    };
 
 Or:
 
-=begin perl
-try sub {
-    # ValueError extends RuntimeError
-    throw(ValueError->new ('Some error message'));
-},
-catch_when 'RuntimeError' => sub {
-    say 'RuntimeError exception caught!';
-};
-
-=end perl
+    try sub {
+        # ValueError extends RuntimeError
+        throw(ValueError->new ('Some error message'));
+    },
+    catch_when 'RuntimeError' => sub {
+        say 'RuntimeError exception caught!';
+    };
 
 =head2 catch_default($;@)
 
 Works exactly like L<Try::Tiny> C<catch> function (OK, there is difference:
 need to specify evident sub block instead of anonymous block):
 
-=begin perl
-try sub {
-    # some code
-},
-catch_default sub {
-    say 'caught every exception';
-};
-
-=end perl
+    try sub {
+        # some code
+    },
+    catch_default sub {
+        say 'caught every exception';
+    };
 
 =head2 then($;@)
 
@@ -481,36 +445,30 @@ C<then> block is executed after C<try> clause, if none of C<catch_when> or
 C<catch_default> blocks was executed (it means, if no exception occured).
 It's executed before C<finally> blocks.
 
-=begin perl
-try sub {
-    # some code
-},
-catch_when 'MyException' => sub {
-    say 'caught MyException exception';
-},
-then sub {
-    say 'No exception was raised';
-},
-finally sub {
-    say 'executed always';
-};
-
-=end perl
+    try sub {
+        # some code
+    },
+    catch_when 'MyException' => sub {
+        say 'caught MyException exception';
+    },
+    then sub {
+        say 'No exception was raised';
+    },
+    finally sub {
+        say 'executed always';
+    };
 
 =head2 finally($;@)
 
 Works exactly like L<Try::Tiny> C<finally> function (OK, again, explicit sub
 instead of implicit):
 
-=begin perl
-try sub {
-    # some code
-},
-finally sub {
-    say 'executed always';
-};
-
-=end perl
+    try sub {
+        # some code
+    },
+    finally sub {
+        say 'executed always';
+    };
 
 =head2 throw
 
@@ -573,12 +531,21 @@ L<http://search.cpan.org/dist/Try-Tiny-SmartCatch/>
 
 =head1 ACKNOWLEDGEMENTS
 
-Yuval Kogman for his L<Try::Tiny> module
-mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> - for good package name and few great features
+=over
+
+=item Yuval Kogman
+
+for his L<Try::Tiny> module
+
+=item mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk>
+
+for good package name and few great features
+
+=back
 
 =head1 LICENSE AND COPYRIGHT
 
-    Copyright (c) 2012 Marcin Sztolcman. All rights reserved.
+    Copyright (c) 2012-2013 Marcin Sztolcman. All rights reserved.
 
     Base code is borrowed from Yuval Kogman L<Try::Tiny> module,
     released under MIT License.
