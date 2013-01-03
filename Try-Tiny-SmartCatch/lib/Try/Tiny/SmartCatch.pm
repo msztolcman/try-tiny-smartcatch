@@ -222,16 +222,21 @@ package Try::Tiny::SmartCatch::Catch::When;
     }
 
     sub for_error {
-        my ($self, $error) = @_;
+        my ($self, $error, $types) = @_;
+
+        $types = $$self{types}
+            if (!defined($types));
+        $types = [$types]
+            if (ref($types) ne 'ARRAY');
 
         if (blessed($error)) {
-            foreach (@{$$self{types}}) {
+            foreach (@$types) {
                 return 1 if ($error->isa($_));
             }
         }
         else {
             my $type;
-            foreach $type (@{$$self{types}}) {
+            foreach $type (@$types) {
                 return 1 if (
                     (ref($type) eq 'Regexp' && $error =~ /$type/) ||
                     (!ref($type) && index($error, $type) > -1)
