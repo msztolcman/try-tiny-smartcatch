@@ -8,6 +8,8 @@ Syntax
 ======
 
 ```perl
+use Try::Tiny::SmartCatch;
+
 try sub {}, # at least one try block
 catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
 catch_when 'exception message' => sub {},
@@ -15,6 +17,11 @@ catch_when qr/exception  message regexp/ => sub {},
 then sub {}, # if no exception is raised, execute then block
 catch_default sub {}, # zero or one catch_default block
 finally sub {}; #zero or more finally blocks
+
+use Try::Tiny::SmartCatch qw/throw/; # import only throw or:
+use Try::Tiny::SmartCatch qw/:all/; # import all functions
+throw ('some exception');
+throw (SomeException->new ('message'));
 ```
 
 But first...
@@ -62,14 +69,28 @@ test_function ();
 
 Above snippet produces us text on STDOUT: ```Hello!```
 
-But more obvious would be no output... This is because of implicit subroutine
-created with braces: ```{}``` after ```try```, ```catch``` or ```finally```
-from ```Try::Tiny```. ```Try::Tiny::SmartCatch``` is more explicit - you must
-always use ```sub``` when defining blocks (look at [Syntax](#Syntax) above).
+But more obvious would be no output... (by ```return``` statement). This is because of
+implicit subroutine created with braces: ```{}``` after ```try```,
+ ```catch``` or ```finally``` from ```Try::Tiny```. ```Try::Tiny::SmartCatch``` is
+more explicit - you must always use ```sub``` when defining blocks (look
+at [Syntax](#Syntax) above).
 
 An exception object or message is passed to defined blocks in two ways:
 * in ```$_``` variable
 * as function arguments, so through ```@_``` array.
+
+```Try::Tiny::SmartCatch``` defines also ```throw``` function (not imported
+by default). Currently it is an alias for ```die```, but is more explicit then ```die``` :)
+
+It can be imported separately:
+```perl
+use Try::Tiny::SmartCatch qw/throw/;
+```
+
+Or with rest of functions:
+```perl
+use Try::Tiny::SmartCatch qw/:all/;
+```
 
 Piece of code
 =============
@@ -82,7 +103,7 @@ Catch only exceptions containing string 'No such file or directory' in message:
 ```perl
 try sub {
     my ($fh, );
-    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+    open ($fh, '<', '/non_existent_file') or throw (qq/Can't open file for reading: $!/);
 },
 catch_when 'No such file or directory' => sub {
     say 'caught error: ', $_;
@@ -94,7 +115,7 @@ Or nearly the same with regexps, but case insensitive:
 ```perl
 try sub {
     my ($fh, );
-    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+    open ($fh, '<', '/non_existent_file') or throw (qq/Can't open file for reading: $!/);
 },
 catch_when qr/no such file or directory/i => sub {
     say 'caught error: ', $_;
@@ -106,7 +127,7 @@ We can mix both types:
 ```perl
 try sub {
     my ($fh, );
-    open ($fh, '<', '/non_existent_file') or die (qq/Can't open file for reading: $!/);
+    open ($fh, '<', '/non_existent_file') or throw (qq/Can't open file for reading: $!/);
 
     # some operations on file
 },
@@ -137,17 +158,17 @@ It's easy now to respond to suitable error:
 ```perl
 my ($fh, );
 try sub {
-    die (FileNotFoundException->new (qq/File not found/))
+    throw (FileNotFoundException->new (qq/File not found/))
         if (!-f $path);
-    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+    throw (PermissionsException->new (qq/Can't read file: not enough permissions/))
         if (!-r $path);
-    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+    open ($fh, '<', $path) or throw (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
     # make some file operations here
 },
 catch_when 'FileNotFoundException' => sub {
-    open ($fh, '>', $path);
-    close ($fh);
+    # create empty file
+    open ($fh, '>', $path) && close ($fh);
 },
 catch_when 'PermissionsException' => sub {
     mail ('me@example.com', "Permission error at $path: ", $_);
@@ -165,17 +186,17 @@ same way:
 ```perl
 my ($fh, );
 try sub {
-    die (FileNotFoundException->new (qq/File not found/))
+    throw (FileNotFoundException->new (qq/File not found/))
         if (!-f $path);
-    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+    throw (PermissionsException->new (qq/Can't read file: not enough permissions/))
         if (!-r $path);
-    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+    open ($fh, '<', $path) or throw (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
     # make some file operations here
 },
 catch_when 'FileNotFoundException' => sub {
-    open ($fh, '>', $path);
-    close ($fh);
+    # create empty file
+    open ($fh, '>', $path) && close ($fh);
 },
 catch_when ['PermissionsException', 'RuntimeException'] => sub {
     mail ('me@example.com', "Some error at $path: ", $_);
@@ -189,17 +210,17 @@ email in any other ```IOException```. For example:
 ```perl
 my ($fh, );
 try sub {
-    die (FileNotFoundException->new (qq/File not found/))
+    throw (FileNotFoundException->new (qq/File not found/))
         if (!-f $path);
-    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+    throw (PermissionsException->new (qq/Can't read file: not enough permissions/))
         if (!-r $path);
-    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+    open ($fh, '<', $path) or throw (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
     # make some file operations here
 },
 catch_when 'FileNotFoundException' => sub {
-    open ($fh, '>', $path);
-    close ($fh);
+    # create empty file
+    open ($fh, '>', $path) && close ($fh);
 },
 # we catch here any IOException, also subclasses of it
 catch_when 'IOException' => sub {
@@ -219,7 +240,7 @@ Return value from ```then``` block is returned as return value of ```try``` call
 ```perl
 my $data_length = try sub {
     my ($fh, );
-    open ($fh, '<', '/etc/fstab') or die ('Can\'t open file: ' . $!);
+    open ($fh, '<', '/etc/fstab') or throw ('Can\'t open file: ' . $!);
     return $fh;
 },
 catch_all sub {
@@ -230,7 +251,7 @@ then sub {
     
     my ($string, );
     try sub {
-        sysread ($fh, $string, -s $fh, 0) or die ($!);
+        sysread ($fh, $string, -s $fh, 0) or throw ($!);
     },
     catch_all sub {
         say $_;
@@ -256,11 +277,11 @@ Hm, we also should always close file handler, so we can use ```finally``` block:
 ```perl
 my ($fh, );
 try sub {
-    die (FileNotFoundException->new (qq/File not found/))
+    throw (FileNotFoundException->new (qq/File not found/))
         if (!-f $path);
-    die (PermissionsException->new (qq/Can't read file: not enough permissions/))
+    throw (PermissionsException->new (qq/Can't read file: not enough permissions/))
         if (!-r $path);
-    open ($fh, '<', $path) or die (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
+    open ($fh, '<', $path) or throw (RuntimeException->new (qq/Cannot open file $path for reading: $!/));
 
     # make some file operations here
 },
@@ -278,7 +299,34 @@ finally sub {
 };
 ```
 
-Other
+Return values
+-------------
+
+When ```try``` block evaluates and exception will not be raised, it returns
+given anonymous subroutine return value. So, if given block returns some
+object, as a return value of ```try``` block you got this object.
+
+This behavior is slightly modified if there is specified ```then``` block - as
+return value of whole ```try``` call is given return value from ```then``` block.
+
+If there is an exception inside ```try``` block, return value of whole block
+is return value of ```catch_*``` block which caught this kind exception. For example:
+
+```perl
+my $value = try sub { throw ('error') },
+catch_when 'error' => sub { say 'error'; 1 },
+catch_when 'exception' => sub { say 'exception'; 2 },
+catch_default sub { say 'default error handling'; 3 },
+then sub { say 'then is called'; 4 };
+```
+
+In ```$value``` you get ```1```. If the message in ```try``` block will
+change to 'exception', ```$value``` will have ```2```. If the message will
+change into something other value, in ```$value``` will be an integer ```3```.
+In case, when in ```try``` block we don't raise an exception, in ```$value``` you
+got ```4```.
+
+Silence errors
 -----
 
 Sometimes we want to just silence errors:
@@ -297,46 +345,22 @@ In example above we just try to open /etc/fstab, and do some operations there.
 Without ```try``` block, your program will stop in place of ```open``` call,
 if there were any error.
 
+catch_default
+-------------
+
 There is also posibility to catch all types of exceptions:
 
 ```perl
 try sub {
-    die ('some error');
+    throw ('some error');
 },
 catch_default sub {
     say "Caught an exception: $_";
 };
 ```
 
-Return values
--------------
-
-When ```try``` block evaluates and exception will not be raised, it returns
-given anonymous subroutine return value. So, if given block returns some
-object, as a return value of ```try``` block you got this object.
-
-This behavior is slightly modified if there is specified ```then``` block - as
-return value of whole ```try``` call is given return value from ```then``` block.
-
-If there is an exception inside ```try``` block, return value of whole block
-is return value of ```catch_*``` block whis caught this kind exception. For example:
-
-```perl
-my $value = try sub { die ('error') },
-catch_when 'error' => sub { say 'error'; 1 },
-catch_when 'exception' => sub { say 'exception'; 2 },
-catch_default sub { say 'default error handling'; 3 },
-then sub { say 'then is called'; 4 };
-```
-
-In ```$value``` you get ```1```. If the message in ```try``` block will
-change to 'exception', ```$value``` will have ```2```. If the message will
-change into something other value, in ```$value``` will be an integer ```3```.
-In case, when in ```try``` block we don't raise an exception, in ```$value``` you
-got ```4```.
-
-Other
------
+Multiplicity
+------------
 
 ```try``` block must exists exactly once. ```catch_when``` and ```finally```
 blocks are allowed to exists zero or more times. ```catch_default``` and ```then```
@@ -356,3 +380,4 @@ Acknowledgements
 
 * Yuval Kogman for his [Try::Tiny](https://metacpan.org/module/Try::Tiny) module
 * mst - Matt S Trout (cpan:MSTROUT) <mst@shadowcat.co.uk> - for good package name and few great features
+
