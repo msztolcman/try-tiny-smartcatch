@@ -14,8 +14,8 @@ try sub {}, # at least one try block
 catch_when 'ExceptionName' => sub {}, # zero or more catch_when blocks
 catch_when 'exception message' => sub {},
 catch_when qr/exception  message regexp/ => sub {},
-then sub {}, # if no exception is raised, execute then block
 catch_default sub {}, # zero or one catch_default block
+then sub {}, # if no exception is raised, execute then block
 finally sub {}; #zero or more finally blocks
 
 use Try::Tiny::SmartCatch qw/throw/; # import only throw or:
