@@ -4,14 +4,18 @@ use 5.006;
 use strict;
 use warnings;
 
-use vars qw/@EXPORT @EXPORT_OK $VERSION @ISA/;
+use vars qw/@EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION @ISA/;
 
 BEGIN {
     require Exporter;
     @ISA = qw/Exporter/;
 }
 
-@EXPORT = @EXPORT_OK = qw/try catch_when catch_default then finally/;
+@EXPORT = qw/try catch_when catch_default then finally/;
+@EXPORT_OK = (@EXPORT, qw/throw/);
+%EXPORT_TAGS = (
+    all      => [@EXPORT_OK],
+);
 
 ++$Carp::Internal{+__PACKAGE__};
 
@@ -171,6 +175,10 @@ sub finally ($;@) {
     my $finally = bless(\$block, 'Try::Tiny::SmartCatch::Finally');
 
     return ($finally, @_);
+}
+
+sub throw {
+    return die (@_);
 }
 
 package # hide from PAUSE
