@@ -26,7 +26,7 @@ sub try($;@) {
 
     my ($catch_default, @catch_when, $code_ref, @finally, $ref_type, $then, $wantarray);
 
-    $wantarray = wantarray;
+    $wantarray = wantarray ();
 
     foreach $code_ref (@code_refs) {
         next if (!$code_ref);
@@ -36,7 +36,7 @@ sub try($;@) {
         ## zero or more 'catch_when' blocks
         if ($ref_type eq 'Try::Tiny::SmartCatch::Catch::When') {
             ## we need to save same handler for many different exception types
-            push (@catch_when, $code_ref);
+            push(@catch_when, $code_ref);
         }
         ## zero or one 'catch_default' blocks
         elsif ($ref_type eq 'Try::Tiny::SmartCatch::Catch::Default') {
