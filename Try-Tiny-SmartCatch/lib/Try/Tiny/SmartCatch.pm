@@ -283,7 +283,7 @@ Version 0.5
     finally sub {}; #zero or more finally blocks
     
     use Try::Tiny::SmartCatch qw/throw/; # import only throw
-    # You can import also all function at once:
+    # You can import also all functions at once:
     # use Try::Tiny::SmartCatch qw/:all/;
     throw('some exception');
     throw(SomeException->new ('message'));
@@ -323,9 +323,9 @@ Above snippet produces us text on STDOUT: C<Hello!>
 
 But more obvious would be no output... (by C<return> statement). This is because of
 implicit subroutine created with braces: C<{}> after C<try>,
- C<catch> or C<finally> from C<Try::Tiny>. C<Try::Tiny::SmartCatch> is
+C<catch> or C<finally> from C<Try::Tiny>. C<Try::Tiny::SmartCatch> is
 more explicit - you must always use C<sub> when defining blocks (look
-at [Syntax](#Syntax) above).
+at L</SYNOPSIS>) above).
 
 An exception object or message is passed to defined blocks in two ways:
 * in C<$_> variable
