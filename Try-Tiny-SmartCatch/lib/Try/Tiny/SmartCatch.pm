@@ -90,10 +90,11 @@ sub try($;@) {
     }
 
     ## set up a scope guard to invoke the finally block at the end
-    my @guards =
+    my @guards = (
         map {
             Try::Tiny::SmartCatch::ScopeGuard->_new($_, $failed ? $error : ())
-        } @finally;
+        } @finally
+    );
 
     ## at this point $failed contains a true value if the eval died, even if some
     ## destructor overwrote $@ as the eval was unwinding.
@@ -141,7 +142,7 @@ sub try($;@) {
 }
 
 sub catch_when ($$;@) {
-    my ($types, $block) = (shift(@_), shift(@_), );
+    my ($types, $block) = (shift(@_), shift(@_));
 
     my $catch = Try::Tiny::SmartCatch::Catch::When->new($block, $types);
 
@@ -203,7 +204,7 @@ package Try::Tiny::SmartCatch::Catch::Default;
 
 package Try::Tiny::SmartCatch::Catch::When;
 {
-    use Scalar::Util qw/ blessed /;
+    use Scalar::Util qw/blessed/;
 
     sub new {
         my ($class, $code, $types) = @_;
