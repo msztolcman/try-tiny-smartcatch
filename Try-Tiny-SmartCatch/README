@@ -2,12 +2,16 @@ Try-Tiny-SmartCatch
 
 Lightweight Perl module for powerful exceptions handling.
 
-Provides set of functions:
+Provides set of functions (by default):
  * try
  * catch_when
  * catch_default
  * then
  * finally 
+
+Also you can request to import "throw" function (currently it is an alias
+for "die", but more explicit):
+use Try::Tiny::Extended qw/:all/;
 
 Try::Tiny::SmartCatch give you the same posibilities as Try::Tiny, but 
 also allow you to catch only certain types of exceptions.
