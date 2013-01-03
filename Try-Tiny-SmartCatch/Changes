@@ -1,5 +1,10 @@
 Revision history for Try-Tiny-SmartCatch
 
+0.5 2013-01-03
+    - missing Changes description
+0.4
+    - added throw function
+    - rewritten source
 0.3 
     - do not use features from perl 5.10, maybe it repair working module on 5.8.x
     - added 'then' block handling

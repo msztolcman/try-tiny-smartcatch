@@ -19,7 +19,7 @@ BEGIN {
 
 ++$Carp::Internal{+__PACKAGE__};
 
-$VERSION = '0.4';
+$VERSION = '0.5';
 
 sub try($;@) {
     my ($try, @code_refs) = @_;
@@ -268,7 +268,7 @@ Try::Tiny::SmartCatch - lightweight Perl module for powerful exceptions handling
 
 =head1 VERSION
 
-Version 0.4
+Version 0.5
 
 =head1 SYNOPSIS
 
