@@ -219,11 +219,7 @@ package Try::Tiny::SmartCatch::Catch::When;
 
         my $self = {
             code  => $code,
-            types => (
-                ref($types) eq 'ARRAY' ? $types   :
-                defined($types)        ? [$types] :
-                                         []
-            ),
+            types => $types,
         };
 
         return bless($self, $class);
@@ -234,16 +230,42 @@ package Try::Tiny::SmartCatch::Catch::When;
 
         $types = $$self{types}
             if (!defined($types));
-        $types = [$types]
-            if (ref($types) ne 'ARRAY');
 
         if (blessed($error)) {
-            foreach (@$types) {
-                return 1 if ($error->isa($_));
+            # types is list of classes
+            if (ref($types) eq 'ARRAY') {
+                foreach (@$types) {
+                    return 1 if ($error->isa($_));
+                }
+            }
+            # types is mapping: class => error_codes
+            elsif (ref($types) eq 'HASH') {
+                my ($code, $type);
+                foreach $type (keys(%$types)) {
+                    next if (!$error->isa($type));
+
+                    $code = $error->get_code();
+
+                    # error_codes is list
+                    if (ref($$types{$type}) eq 'ARRAY') {
+                        foreach (@{$$types{$type}}) {
+                            return 1 if ($code == $_);
+                        }
+                    }
+
+                    # error_codes is single value
+                    elsif ($code == $$types{$type}) {
+                        return 1;
+                    }
+                }
+            }
+            else {
+                return 1 if ($error->isa($types));
             }
         }
         else {
             my $type;
+            $types = [ $types ] if (ref($types) ne 'ARRAY');
             foreach $type (@$types) {
                 return 1 if (
                     (ref($type) eq 'Regexp' && $error =~ /$type/) ||
@@ -281,7 +303,7 @@ Version 0.5
     catch_default sub {}, # zero or one catch_default block
     then sub {}, # if no exception is raised, execute then block
     finally sub {}; #zero or more finally blocks
-    
+
     use Try::Tiny::SmartCatch qw/throw/; # import only throw
     # You can import also all functions at once:
     # use Try::Tiny::SmartCatch qw/:all/;
@@ -313,10 +335,10 @@ creates implicit subroutines:
             # not from test_function!
             return 1;
         };
-    
+
         say 'Hello!';
     }
-    
+
     test_function();
 
 Above snippet produces us text on STDOUT: C<Hello!>
