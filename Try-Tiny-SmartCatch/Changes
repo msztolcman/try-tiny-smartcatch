@@ -1,5 +1,10 @@
 Revision history for Try-Tiny-SmartCatch
 
+0.6 
+    - allow to catch separately object exceptions via it's codes, not only by their type
+    - added few examples
+    - added MIT license file
+    - fixes and cleanups in package meta files: MANIFEST, MYMETA* etc
 0.5 2013-01-03
     - missing Changes description
 0.4
