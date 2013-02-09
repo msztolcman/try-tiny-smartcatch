@@ -12,6 +12,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'MIT')
       : ()),
     PL_FILES            => {},
+    MIN_PERL_VERSION    => '5.006',
     PREREQ_PM => {
         'Test::More' => 0,
     },
