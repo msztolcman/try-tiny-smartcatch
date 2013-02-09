@@ -1,4 +1,12 @@
 Changes
+examples/01-ignore-fails.pl
+examples/02-instead-of-eval.pl
+examples/03-simple-text-exceptions.pl
+examples/04-handling-files.pl
+examples/05-handling-files-advanced.pl
+examples/06-return-values.pl
+examples/07-return-values-2.pl
+examples/08-object-exceptions.pl
 lib/Try/Tiny/SmartCatch.pm
 Makefile.PL
 MANIFEST			This list of files
