@@ -15,6 +15,10 @@ WriteMakefile(
     MIN_PERL_VERSION    => '5.006',
     PREREQ_PM => {
         'Test::More' => 0,
+        'Pod-Coverage' => 0,
+        'Test-CheckManifest' => 0,
+        'Test-Pod' => 0,
+        'Test-Pod-Coverage' => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Try-Tiny-SmartCatch-*' },
